@@ -153,9 +153,3 @@ variable "frontend_target_group_name" {
   description = "The name of the target group for the frontend instances."
   type        = string
 }
-
-variable "frontend_target_group_name" {
-  description = "Frontend Target Group Name"
-  type        = string
-}
-
