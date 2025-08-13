@@ -59,5 +59,7 @@ module "alb" {
   public_subnet_ids          = module.vpc.public_subnet_ids
   alb_name                   = var.alb_name
   alb_security_group_ids     = [module.security_groups.alb_sg_id]
+  frontend_target_group_name = var.frontend_target_group_name
+  frontend_instances_ids     = module.ec2_instances.frontend_instances_ids
 }
 

@@ -154,3 +154,8 @@ variable "frontend_target_group_name" {
   type        = string
 }
 
+variable "frontend_target_group_name" {
+  description = "Frontend Target Group Name"
+  type        = string
+}
+

@@ -18,3 +18,13 @@ variable "alb_security_group_ids" {
   type        = list(string)
 }
 
+variable "frontend_target_group_name" {
+  description = "Frontend Target Group Name"
+  type        = string
+}
+
+variable "frontend_instances_ids" {
+  description = "Frontend Instance IDs"
+  type        = list(string)
+}
+
