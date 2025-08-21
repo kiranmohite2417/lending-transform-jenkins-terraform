@@ -30,35 +30,114 @@ variable "anywhere" {
 }
 
 # Security group labels
-variable "bastion_sg_name" { type = string }
-variable "bastion_sg_description" { type = string }
-variable "frontend_sg_name" { type = string }
-variable "frontend_sg_description" { type = string }
-variable "backend_sg_name" { type = string }
-variable "backend_sg_description" { type = string }
-variable "rds_sg_name" { type = string }
-variable "rds_sg_description" { type = string }
-variable "alb_sg_name" { type = string }
-variable "alb_sg_description" { type = string }
+variable "bastion_sg_name" {
+  type = string
+}
+
+variable "bastion_sg_description" {
+  type = string
+}
+
+variable "frontend_sg_name" {
+  type = string
+}
+
+variable "frontend_sg_description" {
+  type = string
+}
+
+variable "backend_sg_name" {
+  type = string
+}
+
+variable "backend_sg_description" {
+  type = string
+}
+
+variable "rds_sg_name" {
+  type = string
+}
+
+variable "rds_sg_description" {
+  type = string
+}
+
+variable "alb_sg_name" {
+  type = string
+}
+
+variable "alb_sg_description" {
+  type = string
+}
 
 # EC2
-variable "ami" { description = "AMI for EC2 instances"; type = string }
-variable "instance_type" { description = "Instance type for EC2"; type = string }
-variable "instance_count" { description = "Number of frontend/backend instances"; type = number }
-variable "key_name" { description = "Key name for EC2"; type = string }
+variable "ami" {
+  description = "AMI for EC2 instances"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "Instance type for EC2"
+  type        = string
+}
+
+variable "instance_count" {
+  description = "Number of frontend/backend instances"
+  type        = number
+}
+
+variable "key_name" {
+  description = "Key name for EC2"
+  type        = string
+}
 
 # RDS
-variable "db_instance_identifier" { type = string }
-variable "engine" { type = string }
-variable "engine_version" { type = string }
-variable "db_subnet_group_name" { type = string }
-variable "parameter_group_name" { type = string }
-variable "db_instance_class" { type = string }
-variable "allocated_storage" { type = number }
-variable "db_name" { type = string }
-variable "username" { type = string }
-variable "password" { type = string }
+variable "db_instance_identifier" {
+  type = string
+}
+
+variable "engine" {
+  type = string
+}
+
+variable "engine_version" {
+  type = string
+}
+
+variable "db_subnet_group_name" {
+  type = string
+}
+
+variable "parameter_group_name" {
+  type = string
+}
+
+variable "db_instance_class" {
+  type = string
+}
+
+variable "allocated_storage" {
+  type = number
+}
+
+variable "db_name" {
+  type = string
+}
+
+variable "username" {
+  type = string
+}
+
+variable "password" {
+  type = string
+}
 
 # ALB
-variable "alb_name" { type = string }
-variable "frontend_target_group_name" { type = string }
+variable "alb_name" {
+  type = string
+}
+
+variable "frontend_target_group_name" {
+  type = string
+}
+
