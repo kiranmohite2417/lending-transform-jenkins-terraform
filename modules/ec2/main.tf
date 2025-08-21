@@ -9,8 +9,8 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "local_file" "local_ssh_private_key" {
-  content        = tls_private_key.deployer.private_key_pem
-  filename       = "${path.module}/${var.key_name}.pem"
+  content         = tls_private_key.deployer.private_key_pem
+  filename        = "${path.module}/${var.key_name}.pem"
   file_permission = "0400"
 }
 
@@ -18,7 +18,7 @@ resource "aws_instance" "frontend_instances" {
   count                  = var.instance_count
   ami                    = var.ami
   instance_type          = var.instance_type
-  key_name               = var.key_name
+  key_name               = aws_key_pair.deployer.key_name
   subnet_id              = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
   vpc_security_group_ids = [var.frontend_sg_id]
 
@@ -40,7 +40,7 @@ resource "aws_instance" "backend_instances" {
   count                  = var.instance_count
   ami                    = var.ami
   instance_type          = var.instance_type
-  key_name               = var.key_name
+  key_name               = aws_key_pair.deployer.key_name
   subnet_id              = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
   vpc_security_group_ids = [var.backend_sg_id]
 
@@ -61,7 +61,7 @@ resource "aws_instance" "backend_instances" {
 resource "aws_instance" "bastion_host" {
   ami                    = var.ami
   instance_type          = var.instance_type
-  key_name               = var.key_name
+  key_name               = aws_key_pair.deployer.key_name
   subnet_id              = var.bastion_public_subnet_id
   vpc_security_group_ids = [var.bastion_sg_id]
 
