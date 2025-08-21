@@ -17,10 +17,9 @@ resource "aws_db_instance" "default" {
   username                = var.username
   password                = var.password
   parameter_group_name    = var.parameter_group_name
-  db_subnet_group_name    = var.db_subnet_group_name
+  db_subnet_group_name    = aws_db_subnet_group.my_db_subnet_group.name   # FIXED
   vpc_security_group_ids  = var.rds_sg_id
   multi_az                = true
   storage_encrypted       = true
   skip_final_snapshot     = true
 }
-
