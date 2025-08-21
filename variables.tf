@@ -23,133 +23,42 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-variable "bastion_sg_name" {
-  description = "The name for the Bastion security group."
-  type        = string
-}
-
-variable "bastion_sg_description" {
-  description = "The description for the Bastion security group."
-  type        = string
-}
-
-variable "frontend_sg_name" {
-  description = "The name for the Frontend security group."
-  type        = string
-}
-
-variable "frontend_sg_description" {
-  description = "The description for the Frontend security group."
-  type        = string
-}
-
-variable "backend_sg_name" {
-  description = "The name for the Backend security group."
-  type        = string
-}
-
-variable "backend_sg_description" {
-  description = "The description for the Backend security group."
-  type        = string
-}
-
-variable "rds_sg_name" {
-  description = "The name for the RDS security group."
-  type        = string
-}
-
-variable "rds_sg_description" {
-  description = "The description for the RDS security group."
-  type        = string
-}
-
-variable "alb_sg_name" {
-  description = "The name for the ALB security group."
-  type        = string
-}
-
-variable "alb_sg_description" {
-  description = "The description for the ALB security group."
-  type        = string
-}
-
 variable "anywhere" {
-  description = "The address of internet."
+  description = "CIDR for internet anywhere"
   type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
-variable "ami" {
-  description = "The AMI to use for the instances"
-}
+# Security group labels
+variable "bastion_sg_name" { type = string }
+variable "bastion_sg_description" { type = string }
+variable "frontend_sg_name" { type = string }
+variable "frontend_sg_description" { type = string }
+variable "backend_sg_name" { type = string }
+variable "backend_sg_description" { type = string }
+variable "rds_sg_name" { type = string }
+variable "rds_sg_description" { type = string }
+variable "alb_sg_name" { type = string }
+variable "alb_sg_description" { type = string }
 
-variable "instance_type" {
-  description = "The instance type to use for the instances"
-}
+# EC2
+variable "ami" { description = "AMI for EC2 instances"; type = string }
+variable "instance_type" { description = "Instance type for EC2"; type = string }
+variable "instance_count" { description = "Number of frontend/backend instances"; type = number }
+variable "key_name" { description = "Key name for EC2"; type = string }
 
-variable "instance_count" {
-  description = "The number of EC2 instances to be launched."
-}
+# RDS
+variable "db_instance_identifier" { type = string }
+variable "engine" { type = string }
+variable "engine_version" { type = string }
+variable "db_subnet_group_name" { type = string }
+variable "parameter_group_name" { type = string }
+variable "db_instance_class" { type = string }
+variable "allocated_storage" { type = number }
+variable "db_name" { type = string }
+variable "username" { type = string }
+variable "password" { type = string }
 
-variable "key_name" {
-  description = "The key pair name to use for SSH access"
-}
-
-variable "db_instance_identifier" {
-  description = "The name of the RDS instance"
-  type        = string
-}
-
-variable "db_subnet_group_name" {
-  description = "The name of the DB subnet group for the RDS instance"
-  type        = string
-}
-
-variable "db_instance_class" {
-  description = "The instance type of the RDS instance"
-  type        = string
-}
-
-variable "allocated_storage" {
-  description = "The allocated storage in gigabytes"
-  type        = number
-}
-
-variable "username" {
-  description = "Username for the RDS instance"
-  type        = string
-}
-
-variable "password" {
-  description = "Password for the RDS instance"
-  type        = string
-}
-
-variable "engine" {
-  description = "The name of the database engine to be used for the RDS cluster"
-  type        = string
-}
-
-variable "engine_version" {
-  description = "The database engine version"
-  type        = string
-}
-
-variable "parameter_group_name" {
-  description = "The name of the parameter group to associate with the RDS instance"
-  type        = string
-}
-
-variable "db_name" {
-  description = "The name of the database to create when the RDS instance is created"
-  type        = string
-}
-
-variable "alb_name" {
-  description = "The name of the ALB."
-  type        = string
-}
-
-variable "frontend_target_group_name" {
-  description = "The name of the target group for the frontend instances."
-  type        = string
-}
+# ALB
+variable "alb_name" { type = string }
+variable "frontend_target_group_name" { type = string }

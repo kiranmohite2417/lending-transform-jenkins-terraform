@@ -14,48 +14,41 @@ resource "local_file" "local_ssh_private_key" {
   file_permission = "0400"
 }
 
-resource "aws_instance" "frontend_instances" {
-  count                  = var.instance_count
-  ami                    = var.ami
-  instance_type          = var.instance_type
-  key_name               = aws_key_pair.deployer.key_name
-  subnet_id              = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
-  vpc_security_group_ids = [var.frontend_sg_id]
-
-  tags = {
-    Name = "Frontend-${count.index + 1}"
-  }
-
-  user_data = <<-EOF
+# Simple user data for frontend: install and run nginx with health page
+locals {
+  user_data_frontend = <<-EOT
     #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y apache2
-    sudo systemctl start apache2
-    sudo systemctl enable apache2
-    echo "hello frontend ${count.index + 1}" | sudo tee /var/www/html/index.html
-  EOF
+    yum update -y
+    amazon-linux-extras install -y nginx1
+    echo "OK" > /usr/share/nginx/html/health
+    systemctl enable nginx
+    systemctl start nginx
+  EOT
+}
+
+resource "aws_instance" "frontend_instances" {
+  count                       = var.instance_count
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.deployer.key_name
+  subnet_id                   = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
+  vpc_security_group_ids      = [var.frontend_sg_id]
+  associate_public_ip_address = false
+  user_data                   = local.user_data_frontend
+
+  tags = { Name = "frontend-${count.index + 1}" }
 }
 
 resource "aws_instance" "backend_instances" {
-  count                  = var.instance_count
-  ami                    = var.ami
-  instance_type          = var.instance_type
-  key_name               = aws_key_pair.deployer.key_name
-  subnet_id              = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
-  vpc_security_group_ids = [var.backend_sg_id]
+  count                       = var.instance_count
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.deployer.key_name
+  subnet_id                   = var.private_subnet_ids[(count.index + 1) % length(var.private_subnet_ids)]
+  vpc_security_group_ids      = [var.backend_sg_id]
+  associate_public_ip_address = false
 
-  tags = {
-    Name = "Backend-${count.index + 1}"
-  }
-
-  user_data = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y apache2
-    sudo systemctl start apache2
-    sudo systemctl enable apache2
-    echo "hello backend ${count.index + 1}" | sudo tee /var/www/html/index.html
-  EOF
+  tags = { Name = "backend-${count.index + 1}" }
 }
 
 resource "aws_instance" "bastion_host" {
@@ -64,9 +57,7 @@ resource "aws_instance" "bastion_host" {
   key_name               = aws_key_pair.deployer.key_name
   subnet_id              = var.bastion_public_subnet_id
   vpc_security_group_ids = [var.bastion_sg_id]
+  associate_public_ip_address = true
 
-  tags = {
-    Name = "Bastion-Host"
-  }
+  tags = { Name = "bastion-host" }
 }
-
