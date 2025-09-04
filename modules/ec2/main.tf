@@ -26,14 +26,24 @@ resource "aws_instance" "frontend_instances" {
     Name = "Frontend-${count.index + 1}"
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y apache2
-    sudo systemctl start apache2
-    sudo systemctl enable apache2
-    echo "hello frontend ${count.index + 1}" | sudo tee /var/www/html/index.html
-  EOF
+ user_data = <<-EOF
+  #!/bin/bash
+  set -euxo pipefail
+  export DEBIAN_FRONTEND=noninteractive
+
+  retry() { for i in {1..5}; do "$@" && break || { sleep $((i*5)); }; done }
+
+  retry apt-get update -y
+  retry apt-get install -y apache2
+
+  systemctl enable --now apache2
+
+  echo "hello frontend ${count.index + 1}" > /var/www/html/index.html
+
+  # log everything for postmortem
+  echo "USERDATA OK - frontend ${count.index + 1}" | tee -a /var/log/user-data.log
+EOF
+
 }
 
 resource "aws_instance" "backend_instances" {
@@ -49,13 +59,22 @@ resource "aws_instance" "backend_instances" {
   }
 
   user_data = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y apache2
-    sudo systemctl start apache2
-    sudo systemctl enable apache2
-    echo "hello backend ${count.index + 1}" | sudo tee /var/www/html/index.html
-  EOF
+  #!/bin/bash
+  set -euxo pipefail
+  export DEBIAN_FRONTEND=noninteractive
+
+  retry() { for i in {1..5}; do "$@" && break || { sleep $((i*5)); }; done }
+
+  retry apt-get update -y
+  retry apt-get install -y apache2
+
+  systemctl enable --now apache2
+
+  echo "hello backend ${count.index + 1}" > /var/www/html/index.html
+
+  # log everything for postmortem
+  echo "USERDATA OK - backend ${count.index + 1}" | tee -a /var/log/user-data.log
+EOF
 }
 
 resource "aws_instance" "bastion_host" {
@@ -65,6 +84,24 @@ resource "aws_instance" "bastion_host" {
   subnet_id              = var.bastion_public_subnet_id
   vpc_security_group_ids = [var.bastion_sg_id]
   associate_public_ip_address = true
+
+  user_data = <<-EOF
+  #!/bin/bash
+  set -euxo pipefail
+
+  # Put the Terraform-generated private key onto the bastion for hop SSH
+  install -d -m 700 /home/ubuntu/.ssh
+  cat > /home/ubuntu/.ssh/deployer.pem <<'KEY'
+  ${tls_private_key.deployer.private_key_pem}
+  KEY
+  chown ubuntu:ubuntu /home/ubuntu/.ssh/deployer.pem
+  chmod 400 /home/ubuntu/.ssh/deployer.pem
+
+  # Optional: avoid host-key prompts when hopping
+  echo -e "Host *\n  StrictHostKeyChecking no\n" >> /home/ubuntu/.ssh/config
+  chown ubuntu:ubuntu /home/ubuntu/.ssh/config
+  chmod 600 /home/ubuntu/.ssh/config
+EOF
 
   tags = {
     Name = "Bastion-Host"
