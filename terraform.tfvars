@@ -16,7 +16,7 @@ alb_sg_name                  = "alb-sg"
 alb_sg_description           = "Security group for the ALB with HTTP access"
 anywhere                     = ["0.0.0.0/0"]
 
-ami                          = "ami-0f918f7e67a3323f0"
+ami                          = "ami-02d26659fd82cf299"
 instance_type                = "t2.micro"
 instance_count               = 2
 key_name                     = "deployer"
