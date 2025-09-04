@@ -64,6 +64,7 @@ resource "aws_instance" "bastion_host" {
   key_name               = aws_key_pair.deployer.key_name
   subnet_id              = var.bastion_public_subnet_id
   vpc_security_group_ids = [var.bastion_sg_id]
+  associate_public_ip_address = true
 
   tags = {
     Name = "Bastion-Host"
