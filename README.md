@@ -1,1 +1,0 @@
-# lending-transform-jenkins-terraform
